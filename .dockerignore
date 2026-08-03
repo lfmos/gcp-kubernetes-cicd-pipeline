@@ -1,0 +1,11 @@
+.git
+.gitignore
+.gitlab-ci.yml
+.github
+README.md
+CHANGELOG.md
+LICENSE
+docs
+scripts
+k8s
+*.zip

@@ -1,0 +1,21 @@
+# Sistemas operacionais
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Arquivos locais e segredos
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+service-account*.json
+
+# Saídas temporárias
+rendered/
+coverage/
+*.log

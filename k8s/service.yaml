@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gke-cicd-showcase
+  namespace: lf-labs
+  labels:
+    app.kubernetes.io/name: gke-cicd-showcase
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: gke-cicd-showcase
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
