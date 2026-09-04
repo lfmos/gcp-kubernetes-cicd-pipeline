@@ -3,19 +3,39 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+
     container_name: lf-labs-gke-cicd
+
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
+
+    user: "101:101"
+
+    init: true
+
     restart: unless-stopped
+
     security_opt:
       - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
     read_only: true
+
     tmpfs:
       - /tmp
       - /var/cache/nginx
       - /var/run
+
+    pids_limit: 100
+
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      test:
+        - CMD
+        - wget
+        - -qO-
+        - http://127.0.0.1:8080/healthz
       interval: 30s
       timeout: 3s
       retries: 3

@@ -3,41 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Demonstração de pipeline CI/CD com Docker, GitLab CI, Artifact Registry e Kubernetes no GKE.">
+  <meta
+    name="description"
+    content="Demonstração técnica de pipeline CI/CD com Docker, GitLab CI, Artifact Registry, Kubernetes e GKE."
+  >
   <meta name="theme-color" content="#1b1b1b">
+
   <title>GKE CI/CD Pipeline | LF.LABS</title>
-  <link rel="icon" href="./favicon.png" type="favicon/png">
+
+  <link rel="icon" href="./favicon.png" type="image/png">
   <link rel="stylesheet" href="./css/styles.css">
+
   <script defer src="./js/app.js"></script>
 </head>
+
 <body>
-  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <a class="skip-link" href="#conteudo">
+    Ir para o conteúdo
+  </a>
 
   <header class="topbar">
     <a class="brand" href="#inicio" aria-label="LF.LABS - início">
       <span class="brand-mark">LF.</span>LABS
     </a>
+
     <nav class="nav" aria-label="Navegação principal">
       <a href="#projeto">01. Projeto</a>
       <a href="#pipeline">02. Pipeline</a>
       <a href="#arquitetura">03. Arquitetura</a>
       <a href="#operacao">04. Operação</a>
     </nav>
-    <span class="availability"><i></i> DEPLOY READY</span>
+
+    <span class="availability">
+      <i></i>
+      PIPELINE REFERENCE
+    </span>
   </header>
 
   <main id="conteudo">
+
     <section class="hero" id="inicio">
       <div class="hero-copy">
-        <p class="eyebrow">CLOUD DELIVERY SHOWCASE / 002</p>
-        <h1>GKE CI/CD<br><span>PIPELINE</span></h1>
-        <p class="hero-text">
-          Uma aplicação web containerizada, construída por pipeline e preparada para implantação automatizada em um cluster Kubernetes no Google Cloud.
+        <p class="eyebrow">
+          CLOUD DELIVERY SHOWCASE / 002
         </p>
+
+        <h1>
+          GKE CI/CD<br>
+          <span>PIPELINE</span>
+        </h1>
+
+        <p class="hero-text">
+          Uma aplicação web containerizada e uma arquitetura de entrega
+          automatizada projetada para validação, publicação de imagens no
+          Artifact Registry e implantação controlada em Kubernetes no
+          Google Cloud.
+        </p>
+
         <div class="hero-actions">
-          <a class="button primary" href="#pipeline">Explorar pipeline</a>
-          <a class="button ghost" href="https://github.com/lfmos/gcp-kubernetes-cicd-pipeline" target="_blank" rel="noreferrer">Ver repositório ↗</a>
+          <a class="button primary" href="#pipeline">
+            Explorar pipeline
+          </a>
+
+          <a
+            class="button ghost"
+            href="https://github.com/lfmos/gcp-kubernetes-cicd-pipeline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Ver repositório ↗
+          </a>
         </div>
+
         <ul class="tech-list" aria-label="Tecnologias principais">
           <li>Docker</li>
           <li>GitLab CI/CD</li>
@@ -47,187 +84,497 @@
         </ul>
       </div>
 
-      <aside class="terminal-card" aria-label="Resumo do pipeline">
+      <aside class="terminal-card" aria-label="Fluxo de referência do pipeline">
         <div class="terminal-head">
-          <span class="terminal-title">pipeline.production</span>
-          <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="terminal-title">
+            pipeline.reference
+          </span>
+
+          <div class="dots" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
         </div>
+
         <div class="terminal-body">
-          <p><span class="muted">$</span> git push origin main</p>
-          <p><span class="ok">✓</span> validate_source</p>
-          <p><span class="ok">✓</span> build_container</p>
-          <p><span class="ok">✓</span> push_artifact_registry</p>
-          <p><span class="ok">✓</span> deploy_gke</p>
-          <p><span class="ok">✓</span> rollout_status: healthy</p>
+          <p>
+            <span class="muted">$</span>
+            git push origin main
+          </p>
+
+          <p>
+            <span class="ok">→</span>
+            validate_project
+          </p>
+
+          <p>
+            <span class="ok">→</span>
+            build_container
+          </p>
+
+          <p>
+            <span class="ok">→</span>
+            publish_artifact_registry
+          </p>
+
+          <p>
+            <span class="ok">→</span>
+            deploy_to_gke
+          </p>
+
+          <p>
+            <span class="ok">→</span>
+            verify_rollout
+          </p>
+
           <div class="terminal-divider"></div>
+
           <dl class="status-grid">
-            <div><dt>ENVIRONMENT</dt><dd>production</dd></div>
-            <div><dt>REPLICAS</dt><dd>2 → 5</dd></div>
-            <div><dt>STRATEGY</dt><dd>RollingUpdate</dd></div>
-            <div><dt>AUTH</dt><dd>OIDC / WIF</dd></div>
+            <div>
+              <dt>TARGET</dt>
+              <dd>GKE</dd>
+            </div>
+
+            <div>
+              <dt>REPLICAS</dt>
+              <dd>2 → 5</dd>
+            </div>
+
+            <div>
+              <dt>STRATEGY</dt>
+              <dd>RollingUpdate</dd>
+            </div>
+
+            <div>
+              <dt>AUTH</dt>
+              <dd>OIDC / WIF</dd>
+            </div>
           </dl>
         </div>
       </aside>
     </section>
 
     <section class="section" id="projeto">
-      <div class="section-label"><span>01</span><p>O PROJETO</p></div>
+      <div class="section-label">
+        <span>01</span>
+        <p>O PROJETO</p>
+      </div>
+
       <div class="section-content intro-grid">
         <div>
-          <p class="eyebrow">ENTREGA CONTÍNUA</p>
-          <h2>Do código ao cluster,<br>com rastreabilidade.</h2>
+          <p class="eyebrow">
+            ENTREGA CONTÍNUA
+          </p>
+
+          <h2>
+            Do código ao cluster,<br>
+            com rastreabilidade.
+          </h2>
         </div>
+
         <div class="lead-block">
           <p>
-            O projeto demonstra um fluxo de entrega moderno: cada alteração passa por validação, geração de imagem Docker, publicação no Artifact Registry e atualização controlada do workload no GKE.
+            O projeto demonstra um fluxo de entrega moderno em que cada
+            alteração pode passar por validação, geração de imagem Docker,
+            publicação no Artifact Registry e atualização controlada de um
+            workload no GKE.
           </p>
+
           <p>
-            A aplicação também pode ser publicada gratuitamente no GitHub Pages, permitindo apresentar uma versão funcional no portfólio sem manter infraestrutura em nuvem ativa.
+            A aplicação pode ser executada localmente com Docker Compose.
+            O fluxo de cloud permanece desacoplado da demonstração local e
+            depende da configuração do ambiente GCP, do GitLab e da
+            identidade federada.
           </p>
         </div>
       </div>
     </section>
 
     <section class="section" id="pipeline">
-      <div class="section-label"><span>02</span><p>PIPELINE</p></div>
+      <div class="section-label">
+        <span>02</span>
+        <p>PIPELINE</p>
+      </div>
+
       <div class="section-content">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">AUTOMAÇÃO</p>
-            <h2>Fluxo de entrega</h2>
+            <p class="eyebrow">
+              AUTOMAÇÃO
+            </p>
+
+            <h2>
+              Fluxo de entrega
+            </h2>
           </div>
-          <p class="mono-note">TRIGGER: PUSH / MAIN</p>
+
+          <p class="mono-note">
+            PIPELINE: BRANCH / TAG
+          </p>
         </div>
 
         <ol class="pipeline-grid">
+
           <li class="pipeline-step">
             <span class="step-number">01</span>
-            <div class="step-icon">&lt;/&gt;</div>
+
+            <div class="step-icon">
+              &lt;/&gt;
+            </div>
+
             <h3>Commit</h3>
-            <p>O código é versionado e enviado para o repositório central.</p>
-            <code>git push origin main</code>
+
+            <p>
+              O código é versionado e enviado para o repositório central.
+            </p>
+
+            <code>
+              git push origin main
+            </code>
           </li>
+
           <li class="pipeline-step">
             <span class="step-number">02</span>
-            <div class="step-icon">✓</div>
+
+            <div class="step-icon">
+              ✓
+            </div>
+
             <h3>Validate</h3>
-            <p>Arquivos essenciais, manifests e configuração são verificados.</p>
-            <code>stage: validate</code>
+
+            <p>
+              Estrutura, scripts, manifests e controles essenciais são
+              verificados antes das próximas etapas.
+            </p>
+
+            <code>
+              stage: validate
+            </code>
           </li>
+
           <li class="pipeline-step">
             <span class="step-number">03</span>
-            <div class="step-icon">▣</div>
+
+            <div class="step-icon">
+              ▣
+            </div>
+
             <h3>Build</h3>
-            <p>A aplicação é empacotada em uma imagem NGINX não privilegiada.</p>
-            <code>docker build</code>
+
+            <p>
+              A aplicação é empacotada em uma imagem baseada em NGINX
+              não privilegiado.
+            </p>
+
+            <code>
+              docker build
+            </code>
           </li>
+
           <li class="pipeline-step">
             <span class="step-number">04</span>
-            <div class="step-icon">⇧</div>
+
+            <div class="step-icon">
+              ⇧
+            </div>
+
             <h3>Publish</h3>
-            <p>A imagem recebe uma tag imutável e é enviada ao Artifact Registry.</p>
-            <code>$CI_COMMIT_SHORT_SHA</code>
+
+            <p>
+              A imagem recebe identificação pelo commit e pode ser
+              publicada no Artifact Registry.
+            </p>
+
+            <code>
+              $CI_COMMIT_SHORT_SHA
+            </code>
           </li>
+
           <li class="pipeline-step">
             <span class="step-number">05</span>
-            <div class="step-icon">K8s</div>
+
+            <div class="step-icon">
+              K8s
+            </div>
+
             <h3>Deploy</h3>
-            <p>Os manifests declarativos são aplicados ao namespace de produção.</p>
-            <code>kubectl apply</code>
+
+            <p>
+              Na branch padrão, o pipeline está configurado para aplicar
+              os manifests declarativos ao cluster GKE.
+            </p>
+
+            <code>
+              kubectl apply
+            </code>
           </li>
+
           <li class="pipeline-step">
             <span class="step-number">06</span>
-            <div class="step-icon">◎</div>
+
+            <div class="step-icon">
+              ◎
+            </div>
+
             <h3>Verify</h3>
-            <p>O rollout é acompanhado até a confirmação de disponibilidade.</p>
-            <code>rollout status</code>
+
+            <p>
+              Após o deploy, o pipeline acompanha o rollout do Deployment
+              e verifica a disponibilidade do workload.
+            </p>
+
+            <code>
+              rollout status
+            </code>
           </li>
+
         </ol>
       </div>
     </section>
 
     <section class="section" id="arquitetura">
-      <div class="section-label"><span>03</span><p>ARQUITETURA</p></div>
+      <div class="section-label">
+        <span>03</span>
+        <p>ARQUITETURA</p>
+      </div>
+
       <div class="section-content architecture-layout">
+
         <div class="architecture-card">
           <div class="architecture-head">
-            <p>DELIVERY_PATH.yaml</p>
-            <span>PRODUCTION</span>
+            <p>
+              DELIVERY_PATH.yaml
+            </p>
+
+            <span>
+              REFERENCE
+            </span>
           </div>
-          <div class="architecture-flow" role="img" aria-label="Fluxo do GitLab para o Artifact Registry e GKE">
-            <div class="node"><strong>GitLab</strong><small>Source + Runner</small></div>
+
+          <div
+            class="architecture-flow"
+            role="img"
+            aria-label="Fluxo do GitLab para Docker, Artifact Registry e GKE"
+          >
+            <div class="node">
+              <strong>GitLab</strong>
+              <small>Source + Runner</small>
+            </div>
+
             <span class="arrow">→</span>
-            <div class="node"><strong>Docker</strong><small>Build image</small></div>
+
+            <div class="node">
+              <strong>Docker</strong>
+              <small>Build image</small>
+            </div>
+
             <span class="arrow">→</span>
-            <div class="node"><strong>Artifact Registry</strong><small>Store image</small></div>
+
+            <div class="node">
+              <strong>Artifact Registry</strong>
+              <small>Store image</small>
+            </div>
+
             <span class="arrow">→</span>
-            <div class="node accent"><strong>GKE</strong><small>Kubernetes cluster</small></div>
+
+            <div class="node accent">
+              <strong>GKE</strong>
+              <small>Kubernetes cluster</small>
+            </div>
           </div>
+
           <div class="cluster-box">
-            <div class="cluster-title"><span>namespace/lf-labs</span><b>LoadBalancer</b></div>
+            <div class="cluster-title">
+              <span>
+                namespace/lf-labs
+              </span>
+
+              <b>
+                LoadBalancer
+              </b>
+            </div>
+
             <div class="pods">
-              <div><span></span>pod/web-7d9f</div>
-              <div><span></span>pod/web-b82c</div>
-              <div class="autoscale">HPA: 2–5 réplicas</div>
+              <div>
+                <span></span>
+                pod/web-a
+              </div>
+
+              <div>
+                <span></span>
+                pod/web-b
+              </div>
+
+              <div class="autoscale">
+                HPA: 2–5 réplicas
+              </div>
             </div>
           </div>
         </div>
 
         <div class="feature-stack">
+
           <article>
-            <span>SEC.01</span>
-            <h3>Autenticação sem chave fixa</h3>
-            <p>Integração OIDC com Workload Identity Federation para credenciais temporárias no pipeline.</p>
+            <span>
+              SEC.01
+            </span>
+
+            <h3>
+              Autenticação sem chave fixa
+            </h3>
+
+            <p>
+              O pipeline foi projetado para utilizar Workload Identity
+              Federation e credenciais temporárias em vez de uma chave
+              de serviço estática.
+            </p>
           </article>
+
           <article>
-            <span>OPS.02</span>
-            <h3>Health checks</h3>
-            <p>Readiness e liveness probes evitam o envio de tráfego para containers indisponíveis.</p>
+            <span>
+              OPS.02
+            </span>
+
+            <h3>
+              Health checks
+            </h3>
+
+            <p>
+              Readiness e liveness probes permitem que o Kubernetes
+              diferencie containers disponíveis de instâncias que ainda
+              não estão prontas ou precisam ser reiniciadas.
+            </p>
           </article>
+
           <article>
-            <span>SRE.03</span>
-            <h3>Resiliência e escala</h3>
-            <p>RollingUpdate, recursos definidos, HPA e PodDisruptionBudget preparados para produção.</p>
+            <span>
+              SRE.03
+            </span>
+
+            <h3>
+              Resiliência e escala
+            </h3>
+
+            <p>
+              RollingUpdate, requests e limits, HPA e PodDisruptionBudget
+              aplicam ao laboratório práticas comuns de disponibilidade e
+              resiliência em Kubernetes.
+            </p>
           </article>
+
         </div>
       </div>
     </section>
 
     <section class="section" id="operacao">
-      <div class="section-label"><span>04</span><p>OPERAÇÃO</p></div>
+      <div class="section-label">
+        <span>04</span>
+        <p>OPERAÇÃO</p>
+      </div>
+
       <div class="section-content operation-layout">
         <div>
-          <p class="eyebrow">EXECUÇÃO LOCAL</p>
-          <h2>Uma aplicação.<br>Dois caminhos.</h2>
-          <p class="operation-copy">Execute com Docker Compose para demonstração local ou publique automaticamente usando os workflows incluídos.</p>
+          <p class="eyebrow">
+            EXECUÇÃO LOCAL
+          </p>
+
+          <h2>
+            Uma aplicação.<br>
+            Dois contextos.
+          </h2>
+
+          <p class="operation-copy">
+            Execute a aplicação localmente com Docker Compose para validar
+            o container. O pipeline GitLab representa o caminho automatizado
+            para build, publicação e deploy em um ambiente GCP configurado.
+          </p>
         </div>
+
         <div class="command-list">
+
           <div class="command-card">
-            <span>01 / CLONE</span>
-            <code>git clone https://github.com/lfmos/gcp-kubernetes-cicd-pipeline.git</code>
-            <button type="button" data-copy="git clone https://github.com/lfmos/gcp-kubernetes-cicd-pipeline.git">COPIAR</button>
+            <span>
+              01 / CLONE
+            </span>
+
+            <code>
+              git clone https://github.com/lfmos/gcp-kubernetes-cicd-pipeline.git
+            </code>
+
+            <button
+              type="button"
+              data-copy="git clone https://github.com/lfmos/gcp-kubernetes-cicd-pipeline.git"
+            >
+              COPIAR
+            </button>
           </div>
+
           <div class="command-card">
-            <span>02 / START</span>
-            <code>docker compose up -d --build</code>
-            <button type="button" data-copy="docker compose up -d --build">COPIAR</button>
+            <span>
+              02 / START
+            </span>
+
+            <code>
+              docker compose up -d --build
+            </code>
+
+            <button
+              type="button"
+              data-copy="docker compose up -d --build"
+            >
+              COPIAR
+            </button>
           </div>
+
           <div class="command-card">
-            <span>03 / ACCESS</span>
-            <code>http://localhost:8080</code>
-            <button type="button" data-copy="http://localhost:8080">COPIAR</button>
+            <span>
+              03 / ACCESS
+            </span>
+
+            <code>
+              http://localhost:8080
+            </code>
+
+            <button
+              type="button"
+              data-copy="http://localhost:8080"
+            >
+              COPIAR
+            </button>
           </div>
+
         </div>
       </div>
     </section>
+
   </main>
 
   <footer>
-    <div><span class="brand-mark">LF.</span>LABS</div>
-    <p>Projeto de CI/CD, containers e orquestração em nuvem.</p>
+    <div>
+      <span class="brand-mark">LF.</span>LABS
+    </div>
+
+    <p>
+      Projeto de CI/CD, containers, Kubernetes e entrega em nuvem.
+    </p>
+
     <div class="footer-links">
-      <a href="https://github.com/lfmos" target="_blank" rel="noreferrer">GitHub ↗</a>
-      <a href="https://lfmos.github.io/" target="_blank" rel="noreferrer">Portfólio ↗</a>
+      <a
+        href="https://github.com/lfmos"
+        target="_blank"
+        rel="noreferrer"
+      >
+        GitHub ↗
+      </a>
+
+      <a
+        href="https://lfmos.github.io/"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Portfólio ↗
+      </a>
     </div>
   </footer>
 </body>
