@@ -1,0 +1,75 @@
+name: Project Validation
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Validate shell scripts
+        run: |
+          shellcheck scripts/validate.sh
+          shellcheck scripts/bootstrap-gcp.sh
+
+      - name: Run project validation
+        run: bash scripts/validate.sh
+
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
+      - name: Build container image
+        run: |
+          docker build \
+            --pull \
+            --tag gke-cicd-showcase:ci \
+            .
+
+      - name: Verify non-root image user
+        run: |
+          test "$(docker image inspect gke-cicd-showcase:ci --format '{{.Config.User}}')" = "101:101"
+
+      - name: Run container
+        run: |
+          docker run \
+            --detach \
+            --name gke-cicd-showcase-ci \
+            --publish 127.0.0.1:8080:8080 \
+            --read-only \
+            --tmpfs /tmp \
+            --tmpfs /var/cache/nginx \
+            --tmpfs /var/run \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            gke-cicd-showcase:ci
+
+      - name: Validate health endpoint
+        run: |
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8080/healthz | grep --quiet "healthy"; then
+              echo "Health endpoint is responding."
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "Health endpoint did not become ready."
+          docker logs gke-cicd-showcase-ci
+          exit 1
+
+      - name: Show container status
+        if: always()
+        run: docker ps -a
+
+      - name: Cleanup
+        if: always()
+        run: docker rm --force gke-cicd-showcase-ci || true

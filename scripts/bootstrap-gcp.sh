@@ -1,63 +1,168 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Ajuste antes de executar ou exporte as variáveis no terminal.
-PROJECT_ID="${PROJECT_ID:-seu-projeto-gcp}"
+
+PROJECT_ID="${PROJECT_ID:-}"
 REGION="${REGION:-us-central1}"
 CLUSTER_NAME="${CLUSTER_NAME:-portfolio-cluster}"
 REPOSITORY="${REPOSITORY:-portfolio-images}"
-SERVICE_ACCOUNT_NAME="${SERVICE_ACCOUNT_NAME:-gitlab-cicd}"
 
-if [[ "${PROJECT_ID}" == "seu-projeto-gcp" ]]; then
-  echo "Defina PROJECT_ID com o ID real do projeto GCP."
+# Cluster creation is intentionally opt-in because GKE resources can incur costs.
+CREATE_CLUSTER="${CREATE_CLUSTER:-false}"
+
+
+fail() {
+  echo "[ERROR] $1" >&2
   exit 1
-fi
+}
 
-SERVICE_ACCOUNT="${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
-echo "[1/5] Configurando projeto"
-gcloud config set project "${PROJECT_ID}"
+ok() {
+  echo "[OK] $1"
+}
 
-echo "[2/5] Habilitando APIs"
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+
+echo "GCP bootstrap for gcp-kubernetes-cicd-pipeline"
+echo
+
+
+command_exists gcloud ||
+  fail "gcloud CLI was not found."
+
+[[ -n "$PROJECT_ID" ]] ||
+  fail "Define PROJECT_ID before running this script."
+
+
+echo "[1/5] Validating Google Cloud project..."
+
+gcloud projects describe "$PROJECT_ID" >/dev/null 2>&1 ||
+  fail "Project '$PROJECT_ID' does not exist or is not accessible."
+
+gcloud config set project "$PROJECT_ID" >/dev/null
+
+ok "Project configured: $PROJECT_ID"
+
+
+echo "[2/5] Enabling required APIs..."
+
 gcloud services enable \
   artifactregistry.googleapis.com \
   container.googleapis.com \
   iamcredentials.googleapis.com \
-  sts.googleapis.com
+  sts.googleapis.com \
+  --project="$PROJECT_ID"
 
-echo "[3/5] Criando Artifact Registry quando necessário"
-gcloud artifacts repositories describe "${REPOSITORY}" --location "${REGION}" >/dev/null 2>&1 || \
-  gcloud artifacts repositories create "${REPOSITORY}" \
+ok "Required APIs enabled."
+
+
+echo "[3/5] Configuring Artifact Registry..."
+
+if gcloud artifacts repositories describe "$REPOSITORY" \
+  --location="$REGION" \
+  --project="$PROJECT_ID" \
+  >/dev/null 2>&1; then
+
+  ok "Artifact Registry repository already exists."
+
+else
+
+  gcloud artifacts repositories create "$REPOSITORY" \
     --repository-format=docker \
-    --location="${REGION}" \
-    --description="Imagens do portfólio LF.LABS"
+    --location="$REGION" \
+    --project="$PROJECT_ID" \
+    --description="Container images for the GKE CI/CD portfolio project"
 
-echo "[4/5] Criando conta de serviço quando necessário"
-gcloud iam service-accounts describe "${SERVICE_ACCOUNT}" >/dev/null 2>&1 || \
-  gcloud iam service-accounts create "${SERVICE_ACCOUNT_NAME}" \
-    --display-name="GitLab CI/CD"
+  ok "Artifact Registry repository created."
 
-for ROLE in roles/artifactregistry.writer roles/container.developer; do
-  gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-    --member="serviceAccount:${SERVICE_ACCOUNT}" \
-    --role="${ROLE}" \
-    --condition=None >/dev/null
-done
+fi
 
-echo "[5/5] Criando cluster GKE Autopilot quando necessário"
-gcloud container clusters describe "${CLUSTER_NAME}" --region "${REGION}" >/dev/null 2>&1 || \
-  gcloud container clusters create-auto "${CLUSTER_NAME}" --region "${REGION}"
+
+echo "[4/5] Checking GKE cluster..."
+
+if [[ "$CREATE_CLUSTER" == "true" ]]; then
+
+  echo
+  echo "WARNING: GKE resources can generate Google Cloud charges."
+  echo "Cluster creation was explicitly enabled with CREATE_CLUSTER=true."
+  echo
+
+  if gcloud container clusters describe "$CLUSTER_NAME" \
+    --region="$REGION" \
+    --project="$PROJECT_ID" \
+    >/dev/null 2>&1; then
+
+    ok "GKE cluster already exists."
+
+  else
+
+    gcloud container clusters create-auto "$CLUSTER_NAME" \
+      --region="$REGION" \
+      --project="$PROJECT_ID"
+
+    ok "GKE Autopilot cluster created."
+
+  fi
+
+else
+
+  echo "[SKIP] GKE cluster creation is disabled."
+  echo "       Use CREATE_CLUSTER=true only when you intentionally want"
+  echo "       to create cloud infrastructure."
+
+fi
+
+
+echo "[5/5] GitLab identity configuration..."
 
 cat <<EOF
 
-Recursos básicos criados.
+Google Cloud base resources are ready.
 
-Próximos passos:
-1. Configure a integração Google Cloud no projeto GitLab.
-2. Informe no GitLab: cluster ${CLUSTER_NAME} e região ${REGION}.
-3. Confirme as permissões de Workload Identity Federation.
-4. Faça push para a branch main.
+Artifact Registry:
+  ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}
 
-Conta de serviço: ${SERVICE_ACCOUNT}
-Artifact Registry: ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}
+GKE cluster:
+  ${CLUSTER_NAME}
+
+Cluster creation enabled:
+  ${CREATE_CLUSTER}
+
+
+NEXT STEPS
+
+1. Open the GitLab project.
+
+2. Go to:
+   Settings > Integrations > Google Cloud IAM
+
+3. Configure Workload Identity Federation for the Google Cloud project.
+
+4. Restrict the federated identity to the intended GitLab project or
+   appropriate GitLab role instead of granting broad anonymous access.
+
+5. Grant only the permissions required by the pipeline, including
+   Artifact Registry write access and the permissions required to
+   access/deploy to the target GKE cluster.
+
+6. Configure the Google Artifact Management integration so the pipeline
+   receives variables such as:
+
+   GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID
+   GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_LOCATION
+   GOOGLE_ARTIFACT_REGISTRY_REPOSITORY_NAME
+
+7. Review the configuration before pushing to the default branch,
+   because the default branch contains the deploy job.
+
+
+No service-account key is created by this script.
+Workload Identity Federation should provide short-lived credentials.
+
 EOF
+
+ok "Bootstrap completed."

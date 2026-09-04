@@ -1,10 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
 resources:
   - namespace.yaml
   - deployment.yaml
   - service.yaml
   - hpa.yaml
   - pdb.yaml
-commonLabels:
-  app.kubernetes.io/managed-by: gitlab-ci
+
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: gitlab-ci
+    includeSelectors: false
+    includeTemplates: true
