@@ -1,4 +1,4 @@
-# Arquitetura — GCP Kubernetes CI/CD Pipeline
+# Arquitetura — GKE DevSecOps Lab
 
 ## Visão geral
 

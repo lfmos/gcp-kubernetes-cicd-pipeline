@@ -1,4 +1,4 @@
-# GCP Kubernetes CI/CD Pipeline
+# GKE DevSecOps Lab
 
 Projeto técnico de referência para demonstrar um fluxo de entrega contínua com Docker, GitLab CI/CD, Google Artifact Registry, Kubernetes e Google Kubernetes Engine (GKE).
 
@@ -260,7 +260,7 @@ Mais detalhes estão disponíveis em:
 
 ## Estrutura do repositório
 
-    gcp-kubernetes-cicd-pipeline/
+    gke-devsecops-lab/
     ├── .github/
     │   └── workflows/
     │       └── validate.yml
@@ -303,8 +303,8 @@ Mais detalhes estão disponíveis em:
 
 Clone o projeto:
 
-    git clone https://github.com/lfmos/gcp-kubernetes-cicd-pipeline.git
-    cd gcp-kubernetes-cicd-pipeline
+    git clone https://github.com/lfmos/gke-devsecops-lab.git
+    cd gke-devsecops-lab
 
 Inicie:
 
