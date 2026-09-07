@@ -27,7 +27,7 @@ command_exists() {
 }
 
 
-echo "GCP bootstrap for gcp-kubernetes-cicd-pipeline"
+echo "GCP bootstrap for gke-devsecops-lab"
 echo
 
 

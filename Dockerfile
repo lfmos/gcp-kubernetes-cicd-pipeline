@@ -1,9 +1,9 @@
 FROM nginxinc/nginx-unprivileged:1.30.4-alpine-slim
 
-LABEL org.opencontainers.image.title="GKE CI/CD Pipeline" \
-      org.opencontainers.image.description="Aplicação de referência para CI/CD com Docker, GitLab, Kubernetes e GKE" \
-      org.opencontainers.image.source="https://github.com/lfmos/gcp-kubernetes-cicd-pipeline" \
-      org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.title="GKE DevSecOps Lab"
+LABEL org.opencontainers.image.description="Reference application for CI/CD with Docker, GitLab, Kubernetes and GKE"
+LABEL org.opencontainers.image.source="https://github.com/lfmos/gke-devsecops-lab"
+LABEL org.opencontainers.image.licenses="MIT"
 
 COPY --chown=101:101 app/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 app/ /usr/share/nginx/html/
