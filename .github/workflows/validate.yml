@@ -37,6 +37,18 @@ jobs:
         run: |
           test "$(docker image inspect gke-cicd-showcase:ci --format '{{.Config.User}}')" = "101:101"
 
+      - name: Scan container image with Trivy
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            ghcr.io/aquasecurity/trivy:0.74.0 \
+            image \
+             --scanners vuln \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            gke-cicd-showcase:ci
+
       - name: Run container
         run: |
           docker run \
